@@ -44,7 +44,7 @@ workflows:
   build-and-deploy:
     jobs:
       - build-app
-      - run-tests
+      - run-tests:
           requires:
             - build-app
       - hold-for-approval:
