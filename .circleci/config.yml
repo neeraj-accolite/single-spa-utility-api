@@ -28,7 +28,7 @@ jobs:
           root: ~/project
           paths:
             - .
-  deploy-app:
+  deploy-build:
     executor: node/default
     steps:
       - attach_workspace:
@@ -40,12 +40,12 @@ workflows:
     jobs:
       - run-tests
       - build-app
-  deploy:
+  deploy-app:
     jobs:
-      - deploy-app
-          requires:
-            - build-app #only deploy if the build app command is completed
-            - run-tests
-          filters:
-            branches:
-              only: main #deploy only for the main branch.
+      - deploy-build
+        requires:
+          - build-app #only deploy if the build app command is completed
+          - run-tests
+        filters:
+          branches:
+            only: main #deploy only for the main branch.
