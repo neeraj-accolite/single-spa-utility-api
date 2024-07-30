@@ -46,7 +46,7 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      - build-app
+      - build-app:
           pre-steps:
             - run:
                 command: echo "Build process is started"
