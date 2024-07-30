@@ -47,7 +47,7 @@ jobs:
           name: Run Tests
           command: npm test
   deploy-build:
-   executor: 
+    executor: 
       name: node-executor
     steps:
       - attach_workspace:
