@@ -45,8 +45,8 @@ workflows:
     jobs:
       - build-app
       - run-tests
-        requires:
-          - build-app
+          requires:
+            - build-app
       - hold-for-approval:
           type: approval
           requires:
