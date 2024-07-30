@@ -17,24 +17,24 @@ jobs:
           command: npm test
   build-app:
     executor: node/default
-      steps:
-        - checkout
-        - node/install-packages:
-            pkg-manager: npm
-        - run:
-            name: Project is Building
-            command: npm run build
-        - persist_to_workspace: 
-            root: ~/project
-            paths:
-              - .
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Project is Building
+          command: npm run build
+      - persist_to_workspace: 
+          root: ~/project
+          paths:
+            - .
   deploy-app:
     executor: node/default
-      steps:
-        - attach_workspace:
-            at: ~/project
-        - heroku/deploy-via-git:
-            force: true  
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - heroku/deploy-via-git:
+          force: true  
 workflows:
   test_and_build:
     jobs:
