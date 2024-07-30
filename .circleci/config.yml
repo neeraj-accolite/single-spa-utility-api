@@ -1,41 +1,49 @@
-# This config was automatically generated from your source code
-# Stacks detected: deps:node:.
+#latest 2.1 version of CircleCI pipeline process engine.
 version: 2.1
 orbs:
   node: circleci/node@5
+  heroku: circleci/heroku@1.2.6
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  build-node:
-    # Build node project
+  run-tests:
     executor: node/default
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: npm
       - run:
-          command: npm run build
-      - run:
-          name: Create the ~/artifacts directory if it doesn't exist
-          command: mkdir -p ~/artifacts
-      # Copy output to artifacts dir
-      - run:
-          name: Copy artifacts
-          command: cp -R build dist public .output .next .docusaurus ~/artifacts 2>/dev/null || true
-      - store_artifacts:
-          path: ~/artifacts
-          destination: node-build
-  deploy:
-    # This is an example deploy job, not actually used by the workflow
-    docker:
-      - image: cimg/base:stable
+          name: Run Tests
+          command: npm test
+  build-app:
+    executor: node/default
     steps:
-      # Replace this with steps to deploy to users
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
       - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+          name: Project is Building
+          command: npm run build
+      - persist_to_workspace: 
+          root: ~/project
+          paths:
+            - .
+  deploy-build:
+    executor: node/default
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - heroku/deploy-via-git:
+          force: true  
 workflows:
-  build:
+  build-and-deploy:
     jobs:
-      - build-node
-    # - deploy:
-    #     requires:
-    #       - build-node
+      - run-tests
+      - build-app
+      - deploy-build:
+          requires:
+            - run-tests
+            - build-app # only deploy if the build app command is completed
+          filters:
+            branches:
+              only: main #deploy only for the main branch.
