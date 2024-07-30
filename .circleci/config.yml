@@ -25,7 +25,7 @@ jobs:
   build-app:
     executor: 
       name: node-executor
-      version: 22.5.1
+      version: "22.5.1"
     steps:
       - env-setup
       - run:
