@@ -40,10 +40,14 @@ workflows:
     jobs:
       - run-tests
       - build-app
-      - deploy-build:
+      - hold-for-approval:
+          type: approval
           requires:
             - run-tests
-            - build-app # only deploy if the build app command is completed
+            - build-app
+      - deploy-build:
+          requires:
+            - hold-for-approval
           filters:
             branches:
               only: main #deploy only for the main branch.
