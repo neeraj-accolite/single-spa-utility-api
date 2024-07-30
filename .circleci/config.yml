@@ -12,14 +12,6 @@ commands:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  run-tests:
-    executor: node/default
-    parallelism: 2
-    steps:
-      - env-setup
-      - run:
-          name: Run Tests
-          command: npm test
   build-app:
     executor: node/default
     steps:
@@ -31,6 +23,16 @@ jobs:
           root: ~/project
           paths:
             - .
+            - echo-output
+  run-tests:
+    executor: node/default
+    parallelism: 2
+    steps:
+      - attach_workspace:
+        at: ~/project
+      - run:
+          name: Run Tests
+          command: npm test
   deploy-build:
     executor: node/default
     steps:
@@ -41,13 +43,14 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      - run-tests
       - build-app
+      - run-tests
+        requires:
+          - build-app
       - hold-for-approval:
           type: approval
           requires:
             - run-tests
-            - build-app
       - deploy-build:
           requires:
             - hold-for-approval
