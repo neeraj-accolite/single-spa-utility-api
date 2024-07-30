@@ -5,7 +5,6 @@ orbs:
   heroku: circleci/heroku@1.2.6
 commands:
   env-setup:
-    name: Project setup and dependencies installation
     steps:
       - checkout
       - node/install-packages:
