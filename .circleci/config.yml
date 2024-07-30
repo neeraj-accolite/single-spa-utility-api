@@ -2,8 +2,16 @@
 version: 2.1
 #orbs for the reusable snippets of creating a setup , using third party tools. 
 orbs:
-  node: circleci/node@5
   heroku: circleci/heroku@1.2.6
+executors:
+  node-executor:
+    parameters:
+      version:
+        description: "The node version"
+        default: "22.5.1"
+        type: string
+    docker:
+      - image: cimg/node:<<parameters.version>>
 #Commands: are used to specify common commands at a single place to reuse in multiple jobs.
 commands:
   env-setup:
@@ -15,7 +23,9 @@ commands:
 #Jobs : These are the building blocks of the configuration. these are collections of steps.
 jobs:
   build-app:
-    executor: node/default
+    executor: 
+      name: node-executor
+      version: 22.5.1
     steps:
       - env-setup
       - run:
@@ -27,7 +37,8 @@ jobs:
             - .
             - echo-output
   run-tests:
-    executor: node/default
+    executor: 
+      name: node-executor
     parallelism: 2
     steps:
       - attach_workspace:
@@ -36,7 +47,8 @@ jobs:
           name: Run Tests
           command: npm test
   deploy-build:
-    executor: node/default
+   executor: 
+      name: node-executor
     steps:
       - attach_workspace:
           at: ~/project
