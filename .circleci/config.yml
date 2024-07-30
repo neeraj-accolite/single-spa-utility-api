@@ -36,16 +36,14 @@ jobs:
       - heroku/deploy-via-git:
           force: true  
 workflows:
-  test_and_build:
+  build-and-deploy:
     jobs:
       - run-tests
       - build-app
-  deploy-app:
-    jobs:
       - deploy-build:
-          requires:
-            - run-tests
-            - build-app # only deploy if the build app command is completed
-          filters:
-            branches:
-              only: main #deploy only for the main branch.
+        requires:
+          - run-tests
+          - build-app # only deploy if the build app command is completed
+        filters:
+          branches:
+            only: main #deploy only for the main branch.
