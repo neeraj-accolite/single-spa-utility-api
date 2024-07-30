@@ -1,16 +1,18 @@
 #latest 2.1 version of CircleCI pipeline process engine.
 version: 2.1
+#orbs for the reusable snippets of creating a setup , using third party tools. 
 orbs:
-  node: circleci/node@5
+  node: circleci/node@latest
   heroku: circleci/heroku@1.2.6
+#Commands: are used to specify common commands at a single place to reuse in multiple jobs.
 commands:
   env-setup:
+    description: "The command to checkout the code and install the dependencies"
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: npm
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
+#Jobs : These are the building blocks of the configuration. these are collections of steps.
 jobs:
   build-app:
     executor: node/default
@@ -40,10 +42,17 @@ jobs:
           at: ~/project
       - heroku/deploy-via-git:
           force: true  
+#Workflows: These defines the list of jobs and their run order.
 workflows:
   build-and-deploy:
     jobs:
       - build-app
+          pre-steps:
+            - run:
+                command: echo "Build process is started"
+          post-steps:
+            - run:
+                command: echo "Build Process is completed"
       - run-tests:
           requires:
             - build-app
