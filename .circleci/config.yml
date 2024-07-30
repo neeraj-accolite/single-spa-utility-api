@@ -3,24 +3,28 @@ version: 2.1
 orbs:
   node: circleci/node@5
   heroku: circleci/heroku@1.2.6
+commands:
+  env-setup:
+    name: Project setup and dependencies installation
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
 jobs:
   run-tests:
     executor: node/default
+    parallelism: 2
     steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - env-setup
       - run:
           name: Run Tests
           command: npm test
   build-app:
     executor: node/default
     steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - env-setup
       - run:
           name: Project is Building
           command: npm run build
