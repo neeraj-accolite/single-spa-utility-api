@@ -41,9 +41,9 @@ workflows:
       - run-tests
       - build-app
       - deploy-build:
-        requires:
-          - run-tests
-          - build-app # only deploy if the build app command is completed
-        filters:
-          branches:
-            only: main #deploy only for the main branch.
+          requires:
+            - run-tests
+            - build-app # only deploy if the build app command is completed
+          filters:
+            branches:
+              only: main #deploy only for the main branch.
