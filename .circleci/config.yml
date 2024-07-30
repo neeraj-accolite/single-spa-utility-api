@@ -2,7 +2,7 @@
 version: 2.1
 #orbs for the reusable snippets of creating a setup , using third party tools. 
 orbs:
-  node: circleci/node@latest
+  node: circleci/node@5
   heroku: circleci/heroku@1.2.6
 #Commands: are used to specify common commands at a single place to reuse in multiple jobs.
 commands:
