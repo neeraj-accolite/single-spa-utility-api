@@ -49,6 +49,8 @@ jobs:
           command: npm run coverage
       - store_artifacts:
           path: coverage
+      - store_test_results:
+          path: test-results
   deploy-build:
     executor: 
       name: node-executor
