@@ -48,7 +48,7 @@ jobs:
           name: Run Tests and Generate Coverage
           command: npm run coverage
       - store_artifacts:
-          path: test-results
+          path: coverage
       - store_test_results:
           path: test-results
   deploy-build:
