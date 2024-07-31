@@ -40,13 +40,13 @@ jobs:
   run-tests:
     executor: 
       name: node-executor
-    parallelism: 4
+    parallelism: 3
     steps:
       - attach_workspace:
           at: ~/project
       - run:
           name: Run Tests and Generate Coverage
-          command: npm test
+          command: npm run coverage
       - store_artifacts:
           path: test-results
       - store_test_results:
