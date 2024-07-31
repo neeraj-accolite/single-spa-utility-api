@@ -45,8 +45,10 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run:
-          name: Run Tests
-          command: npm test
+          name: Run Tests and Generate Coverage
+          command: npm run coverage
+      - store_artifacts:
+          path: coverage
   deploy-build:
     executor: 
       name: node-executor
