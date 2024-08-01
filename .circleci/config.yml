@@ -1,26 +1,34 @@
 #latest 2.1 version of CircleCI pipeline process engine.
 version: 2.1
+#orbs for the reusable snippets of creating a setup , using third party tools. 
 orbs:
   node: circleci/node@5
   heroku: circleci/heroku@1.2.6
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
+executors:
+  node-executor:
+    parameters:
+      version:
+        description: "The node version"
+        default: "22.5.1"
+        type: string
+    docker:
+      - image: cimg/node:<<parameters.version>>
+#Commands: are used to specify common commands at a single place to reuse in multiple jobs.
+commands:
+  env-setup:
+    description: "The command to checkout the code and install the dependencies"
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+#Jobs : These are the building blocks of the configuration. these are collections of steps.
 jobs:
-  run-tests:
-    executor: node/default
-    steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: npm
-      - run:
-          name: Run Tests
-          command: npm test
   build-app:
-    executor: node/default
+    executor: 
+      name: node-executor
+      version: "22.5.1"
     steps:
-      - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - env-setup
       - run:
           name: Project is Building
           command: npm run build
@@ -28,22 +36,50 @@ jobs:
           root: ~/project
           paths:
             - .
+            - echo-output
+  run-tests:
+    executor: 
+      name: node-executor
+    parallelism: 3
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Run Tests and Generate Coverage
+          command: npm run coverage
+      - store_artifacts:
+          path: coverage
+      - store_test_results:
+          path: test-results
   deploy-build:
-    executor: node/default
+    executor: 
+      name: node-executor
     steps:
       - attach_workspace:
           at: ~/project
       - heroku/deploy-via-git:
           force: true  
+#Workflows: These defines the list of jobs and their run order.
 workflows:
   build-and-deploy:
     jobs:
-      - run-tests
-      - build-app
-      - deploy-build:
+      - build-app:
+          pre-steps:
+            - run:
+                command: echo "Build process is started"
+          post-steps:
+            - run:
+                command: echo "Build Process is completed"
+      - run-tests:
+          requires:
+            - build-app
+      - hold-for-approval:
+          type: approval
           requires:
             - run-tests
-            - build-app # only deploy if the build app command is completed
+      - deploy-build:
+          requires:
+            - hold-for-approval
           filters:
             branches:
               only: main #deploy only for the main branch.

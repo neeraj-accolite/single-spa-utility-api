@@ -1,20 +1,21 @@
-import { getApiWrapper } from "./apiWrapper";
-import { Profile } from "./vite-env";
+import { OrderDetail, ProfileDetailResponse, UserAPIResponse } from "./vite-env";
+import { fetchData } from '@api-lib';
+import Urls from './api-urls';
 
-export async function getAllUsers(limit?: number): Promise<{ data: Profile[] }> {
-  const url = `https://reqres.in/api/users?page=1&per_page=${limit ?? 5}`;
-  const response = await getApiWrapper({ method: 'GET', url });
+export async function getAllUsers(limit?: number): Promise<UserAPIResponse> {
+  const url = Urls.allUsers.replace('$1', `${limit ?? 5}`);
+  const response = await fetchData({ method: 'GET', url });
   return response.data;
 }
 
-export async function getProfileDetails(id: number): Promise<{ data: Profile }> {
-  const url = `https://reqres.in/api/users/${id}`;
-  const response = await getApiWrapper({ method: 'GET', url });
+export async function getProfileDetails(id: number): Promise<ProfileDetailResponse> {
+  const url = Urls.profileDetail.replace('$1', `${id}`);
+  const response = await fetchData({ method: 'GET', url });
   return response.data;
 }
 
-export async function getOrderDetails(id: number) {
-  const url = `https://dummyjson.com/carts/${id}`;
-  const response = await getApiWrapper({ method: 'GET', url });
+export async function getOrderDetails(id: number): Promise<OrderDetail> {
+  const url = Urls.orderDetail.replace('$1', `${id}`);
+  const response = await fetchData({ method: 'GET', url });
   return response.data;
 }
