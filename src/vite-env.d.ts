@@ -29,3 +29,19 @@ export interface OrderDetail {
     totalProducts: number;
     totalQuantity: number;
 }
+
+export interface ProductsDetailResponse {
+    total: number;
+    products: Product[];
+}
+
+export interface Product {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    brand: string;
+    price: number;
+    rating: string;
+    thumbnail: string;
+}
